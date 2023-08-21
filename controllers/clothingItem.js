@@ -6,12 +6,13 @@ const createItem = (req, res) => {
 
   const { name, weather, imageUrl } = req.body;
 
-  ClothingItem.create({ name, weather, imageUrl })
+  ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
       console.log(item);
       res.send({ data: item });
     })
-    .catch(() => {
+    .catch((e) => {
+      console.log(e);
       res.status(500).send({ message: "Error from createItem", e });
     });
 };
