@@ -1,9 +1,7 @@
 const ClothingItem = require("../models/clothingItem");
+const { INVALID_REQUST, NOT_FOUND, SERVER_ERROR } = require("../utils/errors");
 
 const createItem = (req, res) => {
-  console.log(req.user._id);
-  console.log(req.body);
-
   const { name, weather, imageUrl } = req.body;
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
@@ -12,16 +10,31 @@ const createItem = (req, res) => {
       res.send({ data: item });
     })
     .catch((e) => {
-      console.log(e);
-      res.status(500).send({ message: "Error from createItem", e });
+      if (e.name === INVALID_REQUST.name || e.name === "CastError") {
+        res
+          .status(INVALID_REQUST.code)
+          .send({ message: INVALID_REQUST.message });
+      } else if (e.name === NOT_FOUND.name) {
+        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
+      } else {
+        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+      }
     });
 };
 
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
-    .catch(() => {
-      res.status(500).send({ message: "Error from getItems" });
+    .catch((e) => {
+      if (e.name === INVALID_REQUST.name || e.name === "CastError") {
+        res
+          .status(INVALID_REQUST.code)
+          .send({ message: INVALID_REQUST.message });
+      } else if (e.name === NOT_FOUND.name) {
+        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
+      } else {
+        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+      }
     });
 };
 
@@ -31,8 +44,16 @@ const updateItem = (req, res) => {
 
   ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
     .orFail((item) => res.status(200).send({ data: item }))
-    .catch(() => {
-      res.status(500).send({ message: "Error from updateItem" });
+    .catch((e) => {
+      if (e.name === INVALID_REQUST.name || e.name === "CastError") {
+        res
+          .status(INVALID_REQUST.code)
+          .send({ message: INVALID_REQUST.message });
+      } else if (e.name === NOT_FOUND.name) {
+        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
+      } else {
+        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+      }
     });
 };
 
@@ -42,8 +63,16 @@ const deleteItem = (req, res) => {
   ClothingItem.findByIdAndRemove(itemId)
     .orFail()
     .then((item) => res.status(204).send({}))
-    .catch(() => {
-      res.status(500).send({ message: "Error from deleteItem" });
+    .catch((e) => {
+      if (e.name === INVALID_REQUST.name || e.name === "CastError") {
+        res
+          .status(INVALID_REQUST.code)
+          .send({ message: INVALID_REQUST.message });
+      } else if (e.name === NOT_FOUND.name) {
+        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
+      } else {
+        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+      }
     });
 };
 
@@ -54,8 +83,16 @@ const likeItem = (req, res) =>
     { new: true },
   )
     .orFail()
-    .catch(() => {
-      res.status(500).send({ message: "Error from likeItem" });
+    .catch((e) => {
+      if (e.name === INVALID_REQUST.name || e.name === "CastError") {
+        res
+          .status(INVALID_REQUST.code)
+          .send({ message: INVALID_REQUST.message });
+      } else if (e.name === NOT_FOUND.name) {
+        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
+      } else {
+        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+      }
     });
 
 const dislikeItem = (req, res) =>
@@ -65,8 +102,16 @@ const dislikeItem = (req, res) =>
     { new: true },
   )
     .orFail()
-    .catch(() => {
-      res.status(500).send({ message: "Error from dislikeItem" });
+    .catch((e) => {
+      if (e.name === INVALID_REQUST.name || e.name === "CastError") {
+        res
+          .status(INVALID_REQUST.code)
+          .send({ message: INVALID_REQUST.message });
+      } else if (e.name === NOT_FOUND.name) {
+        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
+      } else {
+        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+      }
     });
 
 module.exports = {
