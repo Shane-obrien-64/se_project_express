@@ -1,11 +1,11 @@
-const INVALID_REQUST = {
-  name: "validationError",
+const INVALID_REQUEST = {
+  name: "ValidationError",
   code: 400,
   message: "Invalid data",
 };
 
 const NOT_FOUND = {
-  name: "notFoundError",
+  name: "DocumentNotFoundError",
   code: 404,
   message: "Not found",
 };
@@ -17,7 +17,7 @@ const SERVER_ERROR = {
 };
 
 module.exports = {
-  INVALID_REQUST,
+  INVALID_REQUEST,
   NOT_FOUND,
   SERVER_ERROR,
 };

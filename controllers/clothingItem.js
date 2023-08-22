@@ -1,5 +1,5 @@
 const ClothingItem = require("../models/clothingItem");
-const { INVALID_REQUST, NOT_FOUND, SERVER_ERROR } = require("../utils/errors");
+const { INVALID_REQUEST, NOT_FOUND, SERVER_ERROR } = require("../utils/errors");
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
@@ -10,12 +10,10 @@ const createItem = (req, res) => {
       res.send({ data: item });
     })
     .catch((e) => {
-      if (e.name === INVALID_REQUST.name || e.name === "CastError") {
+      if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
         res
-          .status(INVALID_REQUST.code)
-          .send({ message: INVALID_REQUST.message });
-      } else if (e.name === NOT_FOUND.name) {
-        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
+          .status(INVALID_REQUEST.code)
+          .send({ message: INVALID_REQUEST.message });
       } else {
         res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
       }
@@ -25,35 +23,8 @@ const createItem = (req, res) => {
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
-    .catch((e) => {
-      if (e.name === INVALID_REQUST.name || e.name === "CastError") {
-        res
-          .status(INVALID_REQUST.code)
-          .send({ message: INVALID_REQUST.message });
-      } else if (e.name === NOT_FOUND.name) {
-        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
-      } else {
-        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
-      }
-    });
-};
-
-const updateItem = (req, res) => {
-  const { itemId } = req.params;
-  const { imageUrl } = req.body;
-
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
-    .orFail((item) => res.status(200).send({ data: item }))
-    .catch((e) => {
-      if (e.name === INVALID_REQUST.name || e.name === "CastError") {
-        res
-          .status(INVALID_REQUST.code)
-          .send({ message: INVALID_REQUST.message });
-      } else if (e.name === NOT_FOUND.name) {
-        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
-      } else {
-        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
-      }
+    .catch(() => {
+      res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
     });
 };
 
@@ -62,12 +33,12 @@ const deleteItem = (req, res) => {
 
   ClothingItem.findByIdAndRemove(itemId)
     .orFail()
-    .then((item) => res.status(204).send({}))
+    .then(() => res.status(200).send({}))
     .catch((e) => {
-      if (e.name === INVALID_REQUST.name || e.name === "CastError") {
+      if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
         res
-          .status(INVALID_REQUST.code)
-          .send({ message: INVALID_REQUST.message });
+          .status(INVALID_REQUEST.code)
+          .send({ message: INVALID_REQUEST.message });
       } else if (e.name === NOT_FOUND.name) {
         res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
       } else {
@@ -83,11 +54,12 @@ const likeItem = (req, res) =>
     { new: true },
   )
     .orFail()
+    .then(() => res.status(200).send({}))
     .catch((e) => {
-      if (e.name === INVALID_REQUST.name || e.name === "CastError") {
+      if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
         res
-          .status(INVALID_REQUST.code)
-          .send({ message: INVALID_REQUST.message });
+          .status(INVALID_REQUEST.code)
+          .send({ message: INVALID_REQUEST.message });
       } else if (e.name === NOT_FOUND.name) {
         res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
       } else {
@@ -102,11 +74,12 @@ const dislikeItem = (req, res) =>
     { new: true },
   )
     .orFail()
+    .then(() => res.status(200).send({}))
     .catch((e) => {
-      if (e.name === INVALID_REQUST.name || e.name === "CastError") {
+      if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
         res
-          .status(INVALID_REQUST.code)
-          .send({ message: INVALID_REQUST.message });
+          .status(INVALID_REQUEST.code)
+          .send({ message: INVALID_REQUEST.message });
       } else if (e.name === NOT_FOUND.name) {
         res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
       } else {

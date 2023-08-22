@@ -10,17 +10,22 @@ const createUser = (req, res) => {
       res.send({ data: item });
     })
     .catch((e) => {
-      res.status(500).send({ message: "Error from createUser", e });
+      if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
+        res
+          .status(INVALID_REQUEST.code)
+          .send({ message: INVALID_REQUEST.message });
+      } else {
+        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+      }
     });
 };
 
 const getAllUsers = (req, res) => {
   user
     .find({})
-    .orFail()
     .then((items) => res.status(200).send(items))
     .catch((e) => {
-      res.status(500).send({ message: "Error from getAllUsers" });
+      res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
     });
 };
 
@@ -31,7 +36,15 @@ const getUser = (req, res) => {
     .orFail()
     .then((user) => res.status(200).send(user))
     .catch((e) => {
-      res.status(500).send({ message: "Error from getAllUsers" });
+      if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
+        res
+          .status(INVALID_REQUEST.code)
+          .send({ message: INVALID_REQUEST.message });
+      } else if (e.name === NOT_FOUND.name) {
+        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
+      } else {
+        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+      }
     });
 };
 
