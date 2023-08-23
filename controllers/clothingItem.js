@@ -6,7 +6,6 @@ const createItem = (req, res) => {
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
-      console.log(item);
       res.send({ data: item });
     })
     .catch((e) => {
@@ -33,14 +32,14 @@ const deleteItem = (req, res) => {
 
   ClothingItem.findByIdAndRemove(itemId)
     .orFail()
-    .then(() => res.status(200).send({}))
+    .then((item) => res.status(200).send({ item }))
     .catch((e) => {
       if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
         res
           .status(INVALID_REQUEST.code)
           .send({ message: INVALID_REQUEST.message });
       } else if (e.name === NOT_FOUND.name) {
-        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
+        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
       } else {
         res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
       }
@@ -54,14 +53,14 @@ const likeItem = (req, res) =>
     { new: true },
   )
     .orFail()
-    .then(() => res.status(200).send({}))
+    .then((item) => res.status(200).send({ item }))
     .catch((e) => {
       if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
         res
           .status(INVALID_REQUEST.code)
           .send({ message: INVALID_REQUEST.message });
       } else if (e.name === NOT_FOUND.name) {
-        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
+        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
       } else {
         res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
       }
@@ -74,14 +73,14 @@ const dislikeItem = (req, res) =>
     { new: true },
   )
     .orFail()
-    .then(() => res.status(200).send({}))
+    .then((item) => res.status(200).send({ item }))
     .catch((e) => {
       if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
         res
           .status(INVALID_REQUEST.code)
           .send({ message: INVALID_REQUEST.message });
       } else if (e.name === NOT_FOUND.name) {
-        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
+        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
       } else {
         res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
       }
@@ -90,7 +89,6 @@ const dislikeItem = (req, res) =>
 module.exports = {
   createItem,
   getItems,
-  updateItem,
   deleteItem,
   likeItem,
   dislikeItem,

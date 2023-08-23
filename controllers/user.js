@@ -1,4 +1,5 @@
 const user = require("../models/user");
+const { INVALID_REQUEST, NOT_FOUND, SERVER_ERROR } = require("../utils/errors");
 
 const createUser = (req, res) => {
   const { name, avatar } = req.body;
@@ -6,7 +7,6 @@ const createUser = (req, res) => {
   user
     .create({ name, avatar })
     .then((item) => {
-      console.log(item);
       res.send({ data: item });
     })
     .catch((e) => {
@@ -24,7 +24,7 @@ const getAllUsers = (req, res) => {
   user
     .find({})
     .then((items) => res.status(200).send(items))
-    .catch((e) => {
+    .catch(() => {
       res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
     });
 };
@@ -41,7 +41,7 @@ const getUser = (req, res) => {
           .status(INVALID_REQUEST.code)
           .send({ message: INVALID_REQUEST.message });
       } else if (e.name === NOT_FOUND.name) {
-        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.code });
+        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
       } else {
         res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
       }
