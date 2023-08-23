@@ -34,7 +34,7 @@ const getUser = (req, res) => {
   user
     .findById(userId)
     .orFail()
-    .then((user) => res.status(200).send(user))
+    .then((data) => res.status(200).send(data))
     .catch((e) => {
       if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
         res
