@@ -18,7 +18,6 @@ const createUser = (req, res) => {
       .create({ name: name, avatar: avatar, email: email, password: hash })
       .then((item) => {
         res.send({ data: item });
-        console.log(item.password);
       })
       .catch((e) => {
         console.log(e.name);

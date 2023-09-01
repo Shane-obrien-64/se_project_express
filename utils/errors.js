@@ -25,7 +25,7 @@ const CONFLICT_ERROR = {
 const AUTHORIZATION_ERROR = {
   name: "authorizationError",
   code: 401,
-  message: "Incorrect email or password",
+  message: "Authorization required",
 };
 
 module.exports = {
