@@ -4,6 +4,18 @@ const INVALID_REQUEST = {
   message: "Invalid data",
 };
 
+const AUTHORIZATION_ERROR = {
+  name: "authorizationError",
+  code: 401,
+  message: "Authorization required",
+};
+
+const ACCESS_DENIED = {
+  name: "Forbidden",
+  code: 403,
+  message: "You don't have permission to access",
+};
+
 const NOT_FOUND = {
   name: "DocumentNotFoundError",
   code: 404,
@@ -22,16 +34,11 @@ const CONFLICT_ERROR = {
   message: "Email aleady exists",
 };
 
-const AUTHORIZATION_ERROR = {
-  name: "authorizationError",
-  code: 401,
-  message: "Authorization required",
-};
-
 module.exports = {
   INVALID_REQUEST,
   NOT_FOUND,
   SERVER_ERROR,
   CONFLICT_ERROR,
   AUTHORIZATION_ERROR,
+  ACCESS_DENIED,
 };

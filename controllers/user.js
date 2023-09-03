@@ -42,7 +42,6 @@ const login = (req, res) => {
   return user
     .findUserByCredentials(email, password)
     .then((user) => {
-      console.log(user);
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
@@ -55,35 +54,48 @@ const login = (req, res) => {
     });
 };
 
-// const getAllUsers = (req, res) => {
-//   user
-//     .find({})
-//     .then((items) => res.status(200).send(items))
-//     .catch(() => {
-//       res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
-//     });
-// };
+const getCurrentUser = (req, res) => {
+  const { userId } = req.params;
 
-// const getUser = (req, res) => {
-//   const { userId } = req.params;
-//   user
-//     .findById(userId)
-//     .orFail()
-//     .then((data) => res.status(200).send(data))
-//     .catch((e) => {
-//       if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
-//         res
-//           .status(INVALID_REQUEST.code)
-//           .send({ message: INVALID_REQUEST.message });
-//       } else if (e.name === NOT_FOUND.name) {
-//         res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
-//       } else {
-//         res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
-//       }
-//     });
-// };
+  user
+    .findById(userId)
+    .orFail()
+    .then((data) => res.status(200).send(data))
+    .catch((e) => {
+      if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
+        res
+          .status(INVALID_REQUEST.code)
+          .send({ message: INVALID_REQUEST.message });
+      } else if (e.name === NOT_FOUND.name) {
+        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+      } else {
+        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+      }
+    });
+};
+
+const updateProfile = (req, res) => {
+  const { userId } = req.params;
+
+  findByIdAndUpdate(userId, req.body, { new: true, runValidators: true })
+    .orFail()
+    .then((data) => res.status(200).send(data))
+    .catch((e) => {
+      if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
+        res
+          .status(INVALID_REQUEST.code)
+          .send({ message: INVALID_REQUEST.message });
+      } else if (e.name === NOT_FOUND.name) {
+        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+      } else {
+        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+      }
+    });
+};
 
 module.exports = {
   createUser,
   login,
+  getCurrentUser,
+  updateProfile,
 };

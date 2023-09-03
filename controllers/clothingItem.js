@@ -1,5 +1,10 @@
 const ClothingItem = require("../models/clothingItem");
-const { INVALID_REQUEST, NOT_FOUND, SERVER_ERROR } = require("../utils/errors");
+const {
+  INVALID_REQUEST,
+  NOT_FOUND,
+  SERVER_ERROR,
+  ACCESS_DENIED,
+} = require("../utils/errors");
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
@@ -29,9 +34,19 @@ const getItems = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
+  const { userId } = req.params;
 
-  ClothingItem.findByIdAndRemove(itemId)
+  ClothingItem.findById(itemId)
     .orFail()
+    .then((item) => {
+      if (item.owner.toString() !== userId) {
+        return res
+          .status(ACCESS_DENIED.code)
+          .send({ message: "ACCESS_DENIED.code" });
+      }
+
+      return ClothingItem.findByIdAndRemove(itemId);
+    })
     .then((item) => res.status(200).send({ item }))
     .catch((e) => {
       if (e.name === INVALID_REQUEST.name || e.name === "CastError") {

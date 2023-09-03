@@ -30,6 +30,7 @@ const user = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 8,
+    select: false,
   },
 });
 
@@ -37,17 +38,19 @@ user.statics.findByUserByCredentials = function findByUserByCredentials(
   email,
   password,
 ) {
-  return this.findOne({ email }).then((data) => {
-    if (!data) {
-      return Promise.reject(new Error("Incorrect email or password"));
-    }
-    return bcrypt.compare(password, data.password).then((matched) => {
-      if (!matched) {
+  return this.findOne({ email })
+    .select("+password")
+    .then((data) => {
+      if (!data) {
         return Promise.reject(new Error("Incorrect email or password"));
       }
-      return data;
+      return bcrypt.compare(password, data.password).then((matched) => {
+        if (!matched) {
+          return Promise.reject(new Error("Incorrect email or password"));
+        }
+        return data;
+      });
     });
-  });
 };
 
 module.exports = mongoose.model("users", user);

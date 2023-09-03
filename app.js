@@ -10,12 +10,12 @@ const routes = require("./routes");
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "64e0c50199ceeb398f5f8cb3",
-  };
-  next();
-});
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: "64e0c50199ceeb398f5f8cb3",
+//   };
+//   next();
+// });
 
 app.use(routes);
 
