@@ -34,7 +34,7 @@ const getItems = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-  const { userId } = req.params;
+  const { userId } = req.user;
 
   ClothingItem.findById(itemId)
     .orFail()
@@ -42,7 +42,7 @@ const deleteItem = (req, res) => {
       if (item.owner.toString() !== userId) {
         return res
           .status(ACCESS_DENIED.code)
-          .send({ message: "ACCESS_DENIED.code" });
+          .send({ message: ACCESS_DENIED.code });
       }
 
       return ClothingItem.findByIdAndRemove(itemId);

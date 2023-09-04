@@ -20,7 +20,6 @@ const createUser = (req, res) => {
         res.send({ data: item });
       })
       .catch((e) => {
-        console.log(e.name);
         if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
           res
             .status(INVALID_REQUEST.code)
@@ -39,7 +38,7 @@ const createUser = (req, res) => {
 const login = (req, res) => {
   const { email, password } = req.body;
 
-  return user
+  user
     .findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
@@ -55,7 +54,7 @@ const login = (req, res) => {
 };
 
 const getCurrentUser = (req, res) => {
-  const { userId } = req.params;
+  const userId = req.user;
 
   user
     .findById(userId)
@@ -77,7 +76,8 @@ const getCurrentUser = (req, res) => {
 const updateProfile = (req, res) => {
   const { userId } = req.params;
 
-  findByIdAndUpdate(userId, req.body, { new: true, runValidators: true })
+  user
+    .findByIdAndUpdate(userId, req.body, { new: true, runValidators: true })
     .orFail()
     .then((data) => res.status(200).send(data))
     .catch((e) => {

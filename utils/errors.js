@@ -22,16 +22,16 @@ const NOT_FOUND = {
   message: "Not found",
 };
 
+const CONFLICT_ERROR = {
+  name: "MongoServerError",
+  code: 409,
+  message: "This email is already in use",
+};
+
 const SERVER_ERROR = {
   name: "serverError",
   code: 500,
   message: "Server error",
-};
-
-const CONFLICT_ERROR = {
-  name: "MongoServerError",
-  code: 409,
-  message: "Email aleady exists",
 };
 
 module.exports = {

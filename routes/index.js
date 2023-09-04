@@ -6,6 +6,7 @@ const { NOT_FOUND } = require("../utils/errors");
 
 router.use("/items", ClothingItem);
 router.use("/users", user);
+
 router.post("/signin", login);
 router.post("/signup", createUser);
 
