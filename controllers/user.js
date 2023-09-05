@@ -1,13 +1,14 @@
-const { mongo } = require("mongoose");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const user = require("../models/user");
 const {
   INVALID_REQUEST,
   NOT_FOUND,
   SERVER_ERROR,
   CONFLICT_ERROR,
+  AUTHORIZATION_ERROR,
 } = require("../utils/errors");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+
 const { JWT_SECRET } = require("../utils/config");
 
 const createUser = (req, res) => {
@@ -17,7 +18,14 @@ const createUser = (req, res) => {
     user
       .create({ name: name, avatar: avatar, email: email, password: hash })
       .then((item) => {
-        res.send({ data: item });
+        const userData = {
+          data: {
+            name: item.name,
+            avatar: item.avatar,
+            email: item.email,
+          },
+        };
+        res.send(userData);
       })
       .catch((e) => {
         if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
@@ -40,8 +48,8 @@ const login = (req, res) => {
 
   user
     .findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+    .then((data) => {
+      const token = jwt.sign({ _id: data._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
       res.send({ token });
@@ -54,10 +62,10 @@ const login = (req, res) => {
 };
 
 const getCurrentUser = (req, res) => {
-  const userId = req.user;
+  const { _id } = req.user;
 
   user
-    .findById(userId)
+    .findById(_id)
     .orFail()
     .then((data) => res.status(200).send(data))
     .catch((e) => {
@@ -74,10 +82,15 @@ const getCurrentUser = (req, res) => {
 };
 
 const updateProfile = (req, res) => {
-  const { userId } = req.params;
+  const { _id } = req.user;
+  const { name, avatar } = req.body;
 
   user
-    .findByIdAndUpdate(userId, req.body, { new: true, runValidators: true })
+    .findByIdAndUpdate(
+      _id,
+      { name, avatar },
+      { new: true, runValidators: true },
+    )
     .orFail()
     .then((data) => res.status(200).send(data))
     .catch((e) => {

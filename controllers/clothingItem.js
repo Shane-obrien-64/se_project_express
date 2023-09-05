@@ -34,20 +34,21 @@ const getItems = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-  const { userId } = req.user;
+  const { _id } = req.user;
 
   ClothingItem.findById(itemId)
     .orFail()
     .then((item) => {
-      if (item.owner.toString() !== userId) {
+      if (item.owner.toString() !== _id) {
         return res
           .status(ACCESS_DENIED.code)
           .send({ message: ACCESS_DENIED.code });
       }
 
-      return ClothingItem.findByIdAndRemove(itemId);
+      return ClothingItem.findByIdAndRemove(itemId).then((data) =>
+        res.status(200).send({ data }),
+      );
     })
-    .then((item) => res.status(200).send({ item }))
     .catch((e) => {
       if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
         res

@@ -16,7 +16,7 @@ const auth = (req, res, next) => {
 
   try {
     payload = jwt.verify(token, JWT_SECRET);
-  } catch (err) {
+  } catch (e) {
     return res
       .status(AUTHORIZATION_ERROR.code)
       .send({ message: AUTHORIZATION_ERROR.message });
