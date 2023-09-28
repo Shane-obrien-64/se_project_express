@@ -1,13 +1,17 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const user = require("../models/user");
-const {
-  INVALID_REQUEST,
-  NOT_FOUND,
-  SERVER_ERROR,
-  CONFLICT_ERROR,
-  AUTHORIZATION_ERROR,
-} = require("../utils/errors");
+const BadRequestError = require("../errors/bad-request-error");
+const ConflictError = require("../errors/conflict-error");
+const ForbiddenError = require("../errors/forbidden-error");
+const NotFoundError = require("../errors/not-found-error");
+// const {
+//   INVALID_REQUEST,
+//   NOT_FOUND,
+//   SERVER_ERROR,
+//   CONFLICT_ERROR,
+//   AUTHORIZATION_ERROR,
+// } = require("../utils/errors");
 
 const { JWT_SECRET } = require("../utils/config");
 
@@ -28,16 +32,12 @@ const createUser = (req, res) => {
         res.send(userData);
       })
       .catch((e) => {
-        if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
-          res
-            .status(INVALID_REQUEST.code)
-            .send({ message: INVALID_REQUEST.message });
-        } else if (e.name === CONFLICT_ERROR.name) {
-          res
-            .status(CONFLICT_ERROR.code)
-            .send({ message: CONFLICT_ERROR.message });
+        if (e.name === ValidationError || e.name === "CastError") {
+          next(new BadRequestError("Invaild request"));
+        } else if (e.name === "MongoServerError") {
+          next(new ConflictError("This email is already in use"));
         } else {
-          res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+          next(e);
         }
       }),
   );
@@ -55,9 +55,7 @@ const login = (req, res) => {
       res.send({ token });
     })
     .catch(() => {
-      res
-        .status(AUTHORIZATION_ERROR.code)
-        .send({ message: AUTHORIZATION_ERROR.message });
+      next(new ForbiddenError("You do not have permission to access"));
     });
 };
 
@@ -69,14 +67,12 @@ const getCurrentUser = (req, res) => {
     .orFail()
     .then((data) => res.status(200).send(data))
     .catch((e) => {
-      if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
-        res
-          .status(INVALID_REQUEST.code)
-          .send({ message: INVALID_REQUEST.message });
-      } else if (e.name === NOT_FOUND.name) {
-        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+      if (e.name === "ValidationError" || e.name === "CastError") {
+        next(new BadRequestError("Invaild request"));
+      } else if (e.name === "DocumentNotFoundError") {
+        next(new NotFoundError("Item not found"));
       } else {
-        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+        next(e);
       }
     });
 };
@@ -94,14 +90,12 @@ const updateProfile = (req, res) => {
     .orFail()
     .then((data) => res.status(200).send(data))
     .catch((e) => {
-      if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
-        res
-          .status(INVALID_REQUEST.code)
-          .send({ message: INVALID_REQUEST.message });
-      } else if (e.name === NOT_FOUND.name) {
-        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+      if (e.name === "ValidationError" || e.name === "CastError") {
+        next(new BadRequestError("Invaild request"));
+      } else if (e.name === "DocumentNotFoundError") {
+        next(new NotFoundError("Item not found"));
       } else {
-        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+        next(e);
       }
     });
 };

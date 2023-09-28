@@ -1,10 +1,13 @@
 const ClothingItem = require("../models/clothingItem");
-const {
-  INVALID_REQUEST,
-  NOT_FOUND,
-  SERVER_ERROR,
-  ACCESS_DENIED,
-} = require("../utils/errors");
+const BadRequestError = require("../errors/bad-request-error");
+const ForbiddenError = require("../errors/forbidden-error");
+const NotFoundError = require("../errors/not-found-error");
+// const {
+//   INVALID_REQUEST,
+//   NOT_FOUND,
+//   SERVER_ERROR,
+//   ACCESS_DENIED,
+// } = require("../utils/errors");
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
@@ -13,14 +16,8 @@ const createItem = (req, res) => {
     .then((item) => {
       res.send({ data: item });
     })
-    .catch((e) => {
-      if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
-        res
-          .status(INVALID_REQUEST.code)
-          .send({ message: INVALID_REQUEST.message });
-      } else {
-        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
-      }
+    .catch(() => {
+      next(new BadRequestError("Invaild request"));
     });
 };
 
@@ -28,7 +25,7 @@ const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
     .catch(() => {
-      res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+      next(new BadRequestError("Invaild request"));
     });
 };
 
@@ -40,29 +37,24 @@ const deleteItem = (req, res) => {
     .orFail()
     .then((item) => {
       if (item.owner.toString() !== _id) {
-        return res
-          .status(ACCESS_DENIED.code)
-          .send({ message: ACCESS_DENIED.code });
+        throw new ForbiddenError("You do not have permission to access");
       }
-
       return ClothingItem.findByIdAndRemove(itemId).then((data) =>
         res.status(200).send({ data }),
       );
     })
     .catch((e) => {
-      if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
-        res
-          .status(INVALID_REQUEST.code)
-          .send({ message: INVALID_REQUEST.message });
-      } else if (e.name === NOT_FOUND.name) {
-        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+      if (e.name === "ValidationError" || e.name === "CastError") {
+        next(new BadRequestError("Invaild request"));
+      } else if (e.name === "DocumentNotFoundError") {
+        next(new NotFoundError("Item not found"));
       } else {
-        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+        next(e);
       }
     });
 };
 
-const likeItem = (req, res) =>
+const likeItem = (req, res) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },
@@ -71,18 +63,17 @@ const likeItem = (req, res) =>
     .orFail()
     .then((item) => res.status(200).send({ item }))
     .catch((e) => {
-      if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
-        res
-          .status(INVALID_REQUEST.code)
-          .send({ message: INVALID_REQUEST.message });
-      } else if (e.name === NOT_FOUND.name) {
-        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+      if (e.name === "ValidationError" || e.name === "CastError") {
+        next(new BadRequestError("Invaild request"));
+      } else if (e.name === "DocumentNotFoundError") {
+        next(new NotFoundError("Item not found"));
       } else {
-        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+        next(e);
       }
     });
+};
 
-const dislikeItem = (req, res) =>
+const dislikeItem = (req, res) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } },
@@ -91,16 +82,15 @@ const dislikeItem = (req, res) =>
     .orFail()
     .then((item) => res.status(200).send({ item }))
     .catch((e) => {
-      if (e.name === INVALID_REQUEST.name || e.name === "CastError") {
-        res
-          .status(INVALID_REQUEST.code)
-          .send({ message: INVALID_REQUEST.message });
-      } else if (e.name === NOT_FOUND.name) {
-        res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+      if (e.name === "ValidationError" || e.name === "CastError") {
+        next(new BadRequestError("Invaild request"));
+      } else if (e.name === "DocumentNotFoundError") {
+        next(new NotFoundError("Item not found"));
       } else {
-        res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+        next(e);
       }
     });
+};
 
 module.exports = {
   createItem,
