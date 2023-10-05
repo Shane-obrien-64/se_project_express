@@ -9,11 +9,17 @@ const NotFoundError = require("../errors/not-found-error");
 //   ACCESS_DENIED,
 // } = require("../utils/errors");
 
-const createItem = (req, res) => {
+const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
-
+  console.log(req.user._id);
+  console.log(name, weather, imageUrl);
   clothingItem
-    .create({ name, weather, imageUrl, owner: req.user._id })
+    .create({
+      name: name,
+      weather: weather,
+      imageUrl: imageUrl,
+      owner: req.user._id,
+    })
     .then((item) => {
       res.send({ data: item });
     })
@@ -22,7 +28,7 @@ const createItem = (req, res) => {
     });
 };
 
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   clothingItem
     .find({})
     .then((items) => res.status(200).send(items))
@@ -31,7 +37,7 @@ const getItems = (req, res) => {
     });
 };
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
   const { _id } = req.user;
 
@@ -57,7 +63,7 @@ const deleteItem = (req, res) => {
     });
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   clothingItem
     .findByIdAndUpdate(
       req.params.itemId,
@@ -77,7 +83,7 @@ const likeItem = (req, res) => {
     });
 };
 
-const dislikeItem = (req, res) => {
+const dislikeItem = (req, res, next) => {
   clothingItem
     .findByIdAndUpdate(
       req.params.itemId,

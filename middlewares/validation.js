@@ -36,3 +36,11 @@ const validateURL = (value, helpers) => {
   }
   return helpers.error("string.uri");
 };
+
+module.exports = {
+  validateClothingItem,
+  validateUser,
+  validateLogin,
+  validateId,
+  validateURL,
+};

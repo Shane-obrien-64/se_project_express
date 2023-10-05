@@ -5,17 +5,10 @@ const BadRequestError = require("../errors/bad-request-error");
 const ConflictError = require("../errors/conflict-error");
 const ForbiddenError = require("../errors/forbidden-error");
 const NotFoundError = require("../errors/not-found-error");
-// const {
-//   INVALID_REQUEST,
-//   NOT_FOUND,
-//   SERVER_ERROR,
-//   CONFLICT_ERROR,
-//   AUTHORIZATION_ERROR,
-// } = require("../utils/errors");
 
 const { JWT_SECRET } = require("../utils/config");
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   bcrypt.hash(password, 10).then((hash) =>
@@ -43,7 +36,7 @@ const createUser = (req, res) => {
   );
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   user
@@ -55,11 +48,11 @@ const login = (req, res) => {
       res.send({ token });
     })
     .catch(() => {
-      next(new ForbiddenError("You do not have permission to access"));
+      next(new ForbiddenError("Username or password is incorrect"));
     });
 };
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const { _id } = req.user;
 
   user
@@ -77,7 +70,7 @@ const getCurrentUser = (req, res) => {
     });
 };
 
-const updateProfile = (req, res) => {
+const updateProfile = (req, res, next) => {
   const { _id } = req.user;
   const { name, avatar } = req.body;
 
