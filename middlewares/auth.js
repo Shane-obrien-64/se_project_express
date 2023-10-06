@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { AUTHORIZATION_ERROR } = require("../utils/errors");
-const { JWT_SECRET } = require("../utils/config");
+const { JWT_SECRET = "not-secret" } = require("../utils/config");
 
 const auth = (req, res, next) => {
   const { authorization } = req.headers;

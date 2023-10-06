@@ -6,7 +6,7 @@ const ConflictError = require("../errors/conflict-error");
 const ForbiddenError = require("../errors/forbidden-error");
 const NotFoundError = require("../errors/not-found-error");
 
-const { JWT_SECRET } = require("../utils/config");
+const { JWT_SECRET = "not-secret" } = require("../utils/config");
 
 const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
@@ -25,7 +25,7 @@ const createUser = (req, res, next) => {
         res.send(userData);
       })
       .catch((e) => {
-        if (e.name === ValidationError || e.name === "CastError") {
+        if (e.name === "ValidationError" || e.name === "CastError") {
           next(new BadRequestError("Invaild request"));
         } else if (e.name === "MongoServerError") {
           next(new ConflictError("This email is already in use"));

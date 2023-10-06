@@ -2,12 +2,6 @@ const clothingItem = require("../models/clothingItem");
 const BadRequestError = require("../errors/bad-request-error");
 const ForbiddenError = require("../errors/forbidden-error");
 const NotFoundError = require("../errors/not-found-error");
-// const {
-//   INVALID_REQUEST,
-//   NOT_FOUND,
-//   SERVER_ERROR,
-//   ACCESS_DENIED,
-// } = require("../utils/errors");
 
 const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
@@ -23,7 +17,7 @@ const createItem = (req, res, next) => {
     .then((item) => {
       res.send({ data: item });
     })
-    .catch(() => {
+    .catch((e) => {
       next(new BadRequestError("Invaild request"));
     });
 };
