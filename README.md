@@ -1,5 +1,13 @@
 # WTWR (What to Wear?): Back End
 
+## frontend repo
+
+https://github.com/Shane-obrien-64/se_project_react
+
+## domain:
+
+https://www.wtwr1.crabdance.com
+
 This repository contains the Express.js server for the What to Wear (WTWR) web application. WTWR helps users choose outfits based on weather, occasions, and personal preferences.
 
 Features

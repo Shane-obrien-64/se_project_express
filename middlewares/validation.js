@@ -25,9 +25,11 @@ const validateLogin = celebrate({
 });
 
 const validateId = celebrate({
-  params: Joi.object.keys({
-    _id: Joi.string().hex().length(24).required,
-  }),
+  params: Joi.object
+    .keys({
+      _id: Joi.string().hex().length(24).required,
+    })
+    .unknown(true),
 });
 
 const validateURL = (value, helpers) => {
