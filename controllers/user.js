@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const user = require("../models/user");
 const BadRequestError = require("../errors/bad-request-error");
 const ConflictError = require("../errors/conflict-error");
-const ForbiddenError = require("../errors/forbidden-error");
+const UnauthorizedError = require("../errors/unauthorized-error");
 const NotFoundError = require("../errors/not-found-error");
 
 const { JWT_SECRET = "not-secret" } = require("../utils/config");
@@ -48,7 +48,7 @@ const login = (req, res, next) => {
       res.send({ token });
     })
     .catch(() => {
-      next(new ForbiddenError("Username or password is incorrect"));
+      next(new UnauthorizedError("Username or password is incorrect"));
     });
 };
 

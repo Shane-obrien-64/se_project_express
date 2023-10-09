@@ -5,20 +5,17 @@ const NotFoundError = require("../errors/not-found-error");
 
 const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
-  console.log(req.user._id);
-  console.log(name, weather, imageUrl);
   clothingItem
-    .create({
-      name: name,
-      weather: weather,
-      imageUrl: imageUrl,
-      owner: req.user._id,
-    })
+    .create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
       res.send({ data: item });
     })
     .catch((e) => {
-      next(new BadRequestError("Invaild request"));
+      if (e.name === "ValidationError") {
+        next(new BadRequestError("Invaild request"));
+      } else {
+        next(e);
+      }
     });
 };
 
@@ -26,8 +23,12 @@ const getItems = (req, res, next) => {
   clothingItem
     .find({})
     .then((items) => res.status(200).send(items))
-    .catch(() => {
-      next(new BadRequestError("Invaild request"));
+    .catch((e) => {
+      if (e.name === "ValidationError") {
+        next(new BadRequestError("Invaild request"));
+      } else {
+        next(e);
+      }
     });
 };
 
